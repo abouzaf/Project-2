@@ -31,7 +31,7 @@ shinyServer(function(input, output, session) {
   })
   output$regPlot <- renderPlot({
     #get filtered data
-    newData <- getData() 
+    newData <- getData()
     
     #create plot
     #Creating the same plot of age and average fare, this time with a regression line.
@@ -41,7 +41,7 @@ shinyServer(function(input, output, session) {
       geom_smooth(method='lm',color="Blue", formula=y~x, size=1.5)
     
   })
-  # Dynamically decresing the points sizes after adding a vertical line to put more visibility on the line
+  # Dynamically decreasing the points size after adding a vertical line to put more visibility on the line
   
   observe({ if(input$vline) {
     updateSliderInput(session, "size", value = 3, min = 1)
@@ -82,5 +82,18 @@ shinyServer(function(input, output, session) {
     a("Rise and fall of Titanic", href="http://www.bbc.co.uk/history/titanic")
     
   })
+  observeEvent(input$savep, {
+    session$sendCustomMessage(type = 'testmessage',
+                              message = 'Thank you for clicking')
+  })
+  
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste("TitanicPclass-",input$class, ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(getData(), file, row.names = FALSE)
+    }
+  )
   
 })

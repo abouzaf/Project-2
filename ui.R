@@ -18,6 +18,11 @@ shinyUI(fluidPage(
       br(),
       sliderInput("size", "Size of Points on Graph",
                   min = 1, max = 10, value = 5, step = 1),
+      br(),
+      actionButton("savep", "Click to save Plot 2"),
+      br(),
+      downloadButton("downloadData", "Download Table Data"),
+      br(),
       checkboxInput("vline", h4("Add a vertical line the the plot", style = "color:blue;")),
       
     conditionalPanel(condition = "input.vline", 
