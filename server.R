@@ -10,41 +10,51 @@ shinyServer(function(input, output, session) {
 	})
 	
   #create plot
-  output$sleepPlot <- renderPlot({
+  output$vlinePlot <- renderPlot({
   	#get filtered data
   	newData <- getData() 
   	
   	#create plot
-  	#Creating plot and adding the condition of adding a line based on user input color coding by conservation if true and 
-  	#changing the opacity of the point in the graph based on REM sleep variable
+  	#Creating plot and adding the condition of adding a vertical line based on user input.
   	
   	g <- ggplot(newData, aes(x = age, y = meanFare))
-  	#g + geom_point(size = input$size, aes(col = sex))
-  	if(input$vline & input$sleep){
-  	  g + geom_point(size = 5, aes(col = sex)) +
-  	    geom_vline(xintercept = input$sleep, color="red", 
-  	               linetype="dashed", size=1.5)
-  	#	g + geom_point(size = input$size, aes(col = conservation, alpha = sleep_rem))
-  	#} else if(input$conservation & !input$sleep) {
-  	#  g + geom_point(size = input$size, aes(col = conservation))
-  	}
+  	
+  	if(input$vline & input$int){
+  	      g + geom_point(size = input$size, aes(col = sex)) +
+  	      geom_vline(xintercept = input$int, color="red", 
+  	      linetype="dashed", size=1.5)
+  	   	}
   	else {
   	  g + geom_point(size = input$size, aes(col = sex))
-  	#	g + geom_point(size = input$size)
-  	}
+  	
+  	   }
   })
-  observe({ if(input$sleep) {
-    updateSliderInput(session, "size", min = 3)
+  output$regPlot <- renderPlot({
+    #get filtered data
+    newData <- getData() 
+    
+    #create plot
+    #Creating the same plot of age and average fare, this time with a regression line.
+    
+    g <- ggplot(newData, aes(x = age, y = meanFare))
+    g + geom_point(size = input$size, aes(col = sex)) +
+      geom_smooth(method='lm',color="Blue", formula=y~x, size=1.5)
+    
+  })
+  # Dynamically decresing the points sizes after adding a vertical line to put more visibility on the line
+  
+  observe({ if(input$vline) {
+    updateSliderInput(session, "size", value = 3, min = 1)
      }  else {
-       updateSliderInput(session, "size", min = 1)
+       updateSliderInput(session, "size", value = 5, min = 1)
      }})
   # changing the title dynamically based on the p class
   output$title <- renderUI({ if(input$class == "1") {
-    titlePanel("Titanic Class 1")
+    titlePanel("Titanic P Class 1")
   } else if(input$class == "2") {
-    titlePanel("Titanic Class 2")
+    titlePanel("Titanic P Class 2")
   } else {
-    titlePanel("Titanic Class 3")
+    titlePanel("Titanic P Class 3")
   }
     
     })
@@ -54,12 +64,23 @@ shinyServer(function(input, output, session) {
   	#get filtered data
   	newData <- getData()
   	
-  	paste("Next two tabs include a Summary table and a plot for average fare for class", input$class, "grouped by age and sex", sep = " ")
-  })
+  	paste("For Titanic P Class:", input$class,". Next tabs include:", 
+  	      "Plot 1 - Age and average fare with a vertical line the possibility to add a vertical line.",
+  	      "Plot 2 - Age and average fare with a regression line.",
+  	      "A Summary table containing the subset of the Titanic data with the ability to export the data",
+  	      sep = " ")
+  	
+  	  })
   
   #create output of observations    
   output$table <- renderTable({
 		getData()
+  })
+  
+  
+  output$link <- renderUI({
+    a("Rise and fall of Titanic", href="http://www.bbc.co.uk/history/titanic")
+    
   })
   
 })
