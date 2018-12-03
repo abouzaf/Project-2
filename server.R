@@ -1,12 +1,17 @@
 library(shiny)
 library(dplyr)
 library(ggplot2)
+library(tree)
+library(randomForest)
 
 shinyServer(function(input, output, session) {
   
 	getData <- reactive({
 		newTitanicData <- read_csv("titanic.csv")
 	})
+	#getMLData <- reactive({
+	 # newTitanicData <- read_csv("titanic.csv")
+	#})
 	
   #create plot
   output$vlinePlot <- renderPlot({
@@ -95,6 +100,29 @@ shinyServer(function(input, output, session) {
     
    
    })
+  output$ML <- renderTable({
+    
+    newData <- getData()
+    # Fitting Classification Tress
+    
+    titanicDataTree <- newData %>% dplyr::select(survived, name, sex, age) %>% filter(age != "NA")
+    titanicDataTree$survived <- as.factor(titanicDataTree$survived)
+    
+    set.seed(50)
+    train <- sample(1:nrow(titanicDataTree), size = nrow(titanicDataTree)*0.8)
+    test <- setdiff(1:nrow(titanicDataTree), train)
+    titanicTrain <- titanicDataTree[train, ]
+    titanicTest <- titanicDataTree[test, ]
+    
+    #bagTreeFit <- randomForest(survived ~ ., data = titanicTrain, mtry = ncol(titanicTrain) - 1, ntree = 50, importance = TRUE)
+    classTreeFit <- tree(survived ~ ., data = titanicTrain, split = "deviance")
+    pred1 <- predict(classTreeFit, newdata = dplyr::select(titanicTest, -survived), type = "class")
+    
+     # "Classification tree"
+    treeTbl <- table(data.frame(pred1, titanicTest$survived))
+    treeTbl
+    
+  })
   
   #create output of observations    
   output$table <- renderTable({

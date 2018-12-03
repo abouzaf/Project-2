@@ -50,6 +50,7 @@ shinyUI(fluidPage(
       
       tabPanel("About", textOutput("info")),
       tabPanel("Survival Predictions", uiOutput("poisson")),
+      tabPanel("Survival Classification Tree", tableOutput("ML")),
       tabPanel("Plot 1", plotOutput("vlinePlot")),
       tabPanel("Plot 2", plotOutput("regPlot")),
       tabPanel("Table", tableOutput("table")),
