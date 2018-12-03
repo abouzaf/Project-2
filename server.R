@@ -5,8 +5,7 @@ library(ggplot2)
 shinyServer(function(input, output, session) {
   
 	getData <- reactive({
-		newTitanicData <- read_csv("titanic.csv") %>% filter(pclass == input$class) %>% group_by(age, sex) %>% 
-		  summarise(meanFare = round(mean(fare, na.rm = TRUE), 2))
+		newTitanicData <- read_csv("titanic.csv")
 	})
 	
   #create plot
@@ -17,7 +16,7 @@ shinyServer(function(input, output, session) {
   	#create plot
   	#Creating plot and adding the condition of adding a vertical line based on user input.
   	
-  	g <- ggplot(newData, aes(x = age, y = meanFare))
+  	g <- ggplot(newData, aes(x = age, y = fare))
   	
   	if(input$vline & input$int){
   	      g + geom_point(size = input$size, aes(col = sex)) +
@@ -34,14 +33,14 @@ shinyServer(function(input, output, session) {
     newData <- getData() 
     
     #create plot
-    #Creating the same plot of age and average fare, this time with a regression line.
+    #Creating the same plot of age and fare, this time with a regression line.
     
-    g <- ggplot(newData, aes(x = age, y = meanFare))
+    g <- ggplot(newData, aes(x = age, y = fare))
     g + geom_point(size = input$size, aes(col = sex)) +
       geom_smooth(method='lm',color="Blue", formula=y~x, size=1.5)
     
   })
-  # Dynamically decresing the points sizes after adding a vertical line to put more visibility on the line
+  # Dynamically decreasing the points sizes after adding a vertical line to put more visibility on the line
   
   observe({ if(input$vline) {
     updateSliderInput(session, "size", value = 3, min = 1)
@@ -65,12 +64,37 @@ shinyServer(function(input, output, session) {
   	newData <- getData()
   	
   	paste("For Titanic P Class:", input$class,". Next tabs include:", 
-  	      "Plot 1 - Age and average fare with a vertical line the possibility to add a vertical line.",
-  	      "Plot 2 - Age and average fare with a regression line.",
-  	      "A Summary table containing the subset of the Titanic data with the ability to export the data",
+  	      "Plot 1 - Age and fare with the possibility to add a vertical line.",
+  	      "Plot 2 - Age and fare relationship with a regression line.",
+  	      "A Summary table containing the Titanic data with the ability to export the data",
   	      sep = " ")
   	
   	  })
+  output$poisson <- renderUI({
+    
+    newData <- getData()
+    # Fitting POssion MOdel
+    if(input$agesel) {
+      titanicPoissonFit <- glm(survived ~ age*sex, data = newData, family = "poisson")
+      poissonPreds <- predict(titanicPoissonFit, newdata = data.frame(age = input$agesel, sex = input$sexsel), 
+                              type = "response", se.fit = TRUE)
+      paste("Your survival predictions for", input$sexsel, "age", input$agesel, "are as follows:",
+            poissonPreds, sep = " ")
+    }  else {
+      "Please select age and sex for your survival predictions"
+    }
+    
+    
+    #paste("Your predictions are: ",input$sexsel,"age",input$agesel,"are:", sep = " ")
+    
+    
+         #  type = "response", se.fit = TRUE)
+      #paste("Your predictions for",input$sexsel,"age",input$agesel,"are:", sep = " ")
+      #poissonPreds
+    
+    
+   
+   })
   
   #create output of observations    
   output$table <- renderTable({
