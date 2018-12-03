@@ -21,7 +21,7 @@ shinyUI(fluidPage(
       checkboxInput("pred", h4("Survival Predictions Model", style = "color:blue;")),
       conditionalPanel(condition = "input.pred", 
                        numericInput("agesel",h4("Select the age of the passenger"),
-                                    value = 0, min = 1, max = 80, step = 1),
+                                    value = 0, min = 1, max = 99, step = 1),
                        selectizeInput("sexsel", "Select Sex of the passenger", 
                           selected = "female", choices = levels(as.factor(titanicData$sex)))
                        ),
