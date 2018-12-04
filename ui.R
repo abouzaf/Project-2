@@ -49,8 +49,9 @@ shinyUI(fluidPage(
     tabsetPanel(
       
       tabPanel("About", textOutput("info")),
-      tabPanel("Survival Predictions", uiOutput("poisson")),
-      tabPanel("Survival Classification Tree", tableOutput("ML")),
+      tabPanel("Survival Prediction Model", uiOutput("poisson")),
+      tabPanel("Survival Class Tree.Prediction Vs Actual", tableOutput("ML")),
+      tabPanel("PC Plot", plotOutput("PCPlot")),
       tabPanel("Plot 1", plotOutput("vlinePlot")),
       tabPanel("Plot 2", plotOutput("regPlot")),
       tabPanel("Table", tableOutput("table")),

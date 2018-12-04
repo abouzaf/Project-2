@@ -105,7 +105,9 @@ shinyServer(function(input, output, session) {
     newData <- getData()
     # Fitting Classification Tress
     
-    titanicDataTree <- newData %>% dplyr::select(survived, name, sex, age) %>% filter(age != "NA")
+    titanicDataTree <- titanicData %>% dplyr::select(survived, name, sex, age, sibsp, parch, ticket, fare)# %>% filter(age != "NA")
+    #remove NAs
+    titanicDataTree <- titanicDataTree[complete.cases(titanicDataTree), ]
     titanicDataTree$survived <- as.factor(titanicDataTree$survived)
     
     set.seed(50)
@@ -119,8 +121,22 @@ shinyServer(function(input, output, session) {
     pred1 <- predict(classTreeFit, newdata = dplyr::select(titanicTest, -survived), type = "class")
     
      # "Classification tree"
-    treeTbl <- table(data.frame(pred1, titanicTest$survived))
+    treeTbl <- table(data.frame(Predictions = pred1, Actual = titanicTest$survived))
     treeTbl
+    
+  })
+  output$PCPlot <- renderPlot({
+   
+    newData <- getData()
+    # Fitting a Principal components model for a subset of titanic data which contain numeric variables.
+    titanicDataPC <- titanicData %>% dplyr::select(survived, age, sibsp, parch, ticket, fare)
+    #remove NAs
+    titanicDataTree <- titanicDataTree[complete.cases(titanicDataTree), ]
+    PCs <- prcomp(select(titanicDataPC, survived:fare), center = TRUE, scale = TRUE)
+    # Plotting the first two principal components
+    biplot(PCs, xlabs = titanicDataPC$fare, choices = c(1,2), cex = 0.5,
+           xlim = c(-0.14, 0.12))
+    
     
   })
   
