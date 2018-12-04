@@ -129,9 +129,9 @@ shinyServer(function(input, output, session) {
    
     newData <- getData()
     # Fitting a Principal components model for a subset of titanic data which contain numeric variables.
-    titanicDataPC <- titanicData %>% dplyr::select(survived, age, sibsp, parch, ticket, fare)
+    titanicDataPC <- titanicData %>% dplyr::select(survived, age, sibsp, parch, fare)
     #remove NAs
-    titanicDataTree <- titanicDataTree[complete.cases(titanicDataTree), ]
+    titanicDataPC <- titanicDataPC[complete.cases(titanicDataPC), ]
     PCs <- prcomp(select(titanicDataPC, survived:fare), center = TRUE, scale = TRUE)
     # Plotting the first two principal components
     biplot(PCs, xlabs = titanicDataPC$fare, choices = c(1,2), cex = 0.5,
