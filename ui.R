@@ -2,7 +2,6 @@ library(ggplot2)
 library(readr)
 titanicData <- read_csv("titanic.csv")
 
-
 shinyUI(fluidPage(
   
   img(src="The-Titanic-006.jpg", align = "right"),

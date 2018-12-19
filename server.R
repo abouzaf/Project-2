@@ -3,7 +3,7 @@ library(dplyr)
 library(ggplot2)
 library(tree)
 library(randomForest)
-
+titanicData <- read_csv("titanic.csv")
 shinyServer(function(input, output, session) {
   
 	getData <- reactive({
