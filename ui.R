@@ -1,6 +1,6 @@
 library(ggplot2)
 library(readr)
-titanicData <- read_csv("titanic.csv")
+#titanicData <- read_csv("titanic.csv")
 
 
 shinyUI(fluidPage(
